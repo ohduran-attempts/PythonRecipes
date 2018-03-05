@@ -3,6 +3,8 @@
 Clean up weird entries on your form.
 """
 
+# Major concern here is PERFORMANCE. Test, and measure.
+
 # str.upper() and str.lower()
 
 # str.replace() and re.sub()
@@ -56,4 +58,4 @@ print(a) #pýtĥöñ is awesome\n
 d = unicodedata.normalize('NFD',a)
 e = d.encode('ascii','ignore').decode('ascii')
 
-print(e) # python is awesome\n 
+print(e) # python is awesome\n
