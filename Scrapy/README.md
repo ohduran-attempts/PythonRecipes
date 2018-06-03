@@ -122,3 +122,37 @@ for quote in response.css("div.quote"):
     tags = quote.css("div.tags a.tag::text").extract()
     print(dict(text=text, author=author, tags=tags))
 ```
+
+## Extracting Data in the Spider
+
+Until now, the spider doesn't extract any data in particular, but only saves the whole HTML page to a local file. Let's integrate the extraction logic used above into it.
+
+A Scrapy spider typically generates many dictionaries containing the data extracted from the page. To do that, we use `yield` in the callback, as used in quotes_spider:
+
+```python
+def parse(self, response):
+      """Callback method."""
+      page = response.url.split("/")[-2]  # number of page
+      filename = 'quotes-%s.html' % page
+      with open(filename, 'wb') as f:
+          f.write(response.body)
+      self.log('Saved file %s' % filename)
+
+      for quote in response.css('div.quote'):
+          yield {
+              'text': quote.css('span.text::text').extract_first(),
+              'author': quote.css('small.author::text').extract_first(),
+              'tags': quote.css('div.tags a.tag::text').extract(),
+          }
+```
+
+
+If we run the spider again using `scrapy crawl quotes`, it will output the extracted data with the log.
+
+## Storing the scraped data
+
+The simplest way to store the scraped data is by using [Feed exports](https://doc.scrapy.org/en/latest/topics/feed-exports.html#topics-feed-exports), by doing
+
+`scrapy crawl quotes -o quotes.json`.
+
+Be aware that running the command again will append the new quotes to the file instead of overwritting.
