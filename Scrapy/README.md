@@ -180,3 +180,45 @@ we can try extracting it in the shell:
 And by doing `esponse.css('li.next a::attr(href)').extract_first()`, we obtain the link to the following page.
 
 We can add that logic to our spider by doing:
+
+```python
+def parse(self, response):
+      """Callback method."""
+      # ...
+
+      # Follow the next page
+      next_page = response.css('li.next a::attr(href)').extract_first()
+      if next_page is not None:
+          next_page = response.urljoin(next_page)
+          yield scrapy.Request(next_page, callback=self.parse)
+```
+
+
+What we can also do is the following, a much simpler way:
+
+```python
+def parse(self, response):
+      """Callback method."""
+      # ...
+
+      # Follow the next page
+      next_page = response.css('li.next a::attr(href)').extract_first()
+      if next_page is not None:
+          yield response.follow(next_page, callback=self.parse)
+```
+
+By using response.follow, we don't need to call urljoin.
+
+You can also pass a selector to response.follow with the necessary attributes:
+
+```python
+for href in response.css('li.next a::attr(href)'):
+    yield response.follow(href, callback=self.parse)
+```
+
+And for `<a>` tags there is a shortcut:
+
+```python
+for a in response.css('li.next a'):
+  yield response.follow(a, callback=self.parse)
+```
