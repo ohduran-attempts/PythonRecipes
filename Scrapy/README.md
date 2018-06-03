@@ -156,3 +156,27 @@ The simplest way to store the scraped data is by using [Feed exports](https://do
 `scrapy crawl quotes -o quotes.json`.
 
 Be aware that running the command again will append the new quotes to the file instead of overwritting.
+
+## Following links
+
+Instead of just scraping, let's say we want quotes from all pages in the website. Now that we now how to extract data from pages, let's see how to follow links from them.
+
+First, we need to extract the link to the page we want to follow. Examining our page, we can see there is a link to the next page:
+
+```html
+<ul class="pager">
+    <li class="next">
+        <a href="/page/2/">Next <span aria-hidden="true">&rarr;</span></a>
+    </li>
+</ul>
+```
+
+we can try extracting it in the shell:
+```
+>>>response.css('li.next a').extract_first()
+'<a href="/page/2/">Next <span aria-hidden="true">→</span></a>'
+```
+
+And by doing `esponse.css('li.next a::attr(href)').extract_first()`, we obtain the link to the following page.
+
+We can add that logic to our spider by doing:
