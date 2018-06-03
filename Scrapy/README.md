@@ -71,3 +71,10 @@ Besides the `extract()` method, we can use `re()` to extract using *regular expr
 ['Quotes', 'Scrape']`
 
 In order to find the proper CSS selector to use, you might find useful opening the response page from the shell in your web browser using `view(response)`. It will open the web browser with the website.
+
+## XPath: a brief intro
+Besides CSS, Scrapy selectors also support using XPath expressions:
+
+`response.xpath('//title')`
+
+XPath expressions are very powerful, and the foundation of Scrapy Selectors. They are so because besides navigating the structure, it can also look at the content. Using XPath we are able to select things like *select the link that contains the text "Next Page"*. This makes XPath very fitting to the task of scraping, and we encourage to learn [XPath](https://doc.scrapy.org/en/latest/topics/selectors.html#topics-selectors), with this [tutorial](http://zvon.org/comp/r/tut-XPath_1.html) and this [one](http://plasmasturm.org/log/xpath101/).
