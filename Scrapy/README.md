@@ -29,3 +29,10 @@ tutorial/
 Spiders are classes that you define that Scrapy uses to scrape information from a website. They must subclass `scrapy.Spider` and define the initial requests to make, optionally how to follow links in the pages, and how to parse the downloaded page content to extract data.
 
 Have a look at `quotes_spider.py` under the `tutorial/spiders` directory.
+
+## How to run our spider
+
+To put our spider to work, go to the project's top level directory and run
+`scrapy crawl quotes`
+
+Now, check the fles in the current directory: 2 new files named *quotes-1.html* and *quotes-2.html* have been created, with the content for the respective URLs.
