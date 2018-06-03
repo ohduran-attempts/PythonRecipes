@@ -36,3 +36,38 @@ To put our spider to work, go to the project's top level directory and run
 `scrapy crawl quotes`
 
 Now, check the fles in the current directory: 2 new files named *quotes-1.html* and *quotes-2.html* have been created, with the content for the respective URLs.
+
+### What is going on here?
+Scrapy schedules the scrapy.Request objects, returned by the 'start_requests' method. Upon receiving a response for each one, it instantiates `Response` objects and calls the callback method `parse`, passing the response as an argument.
+
+## A shortcut to the start_requests method.
+Instead of implementing `start_requests`, you can just define a `start_urls` class attribute with a list of URLs. This list will then be used by the default implementation of `start_requests` to create the initial requests for your spider.
+
+The `parse` method will be called to handle each of the requests for those URLs, even though we haven't explicitly told Scrapy to do so (parse is the callback method by default).
+
+## Extracting data
+
+Let's use [Scrapy shell](https://doc.scrapy.org/en/latest/topics/shell.html#topics-shell):
+
+`scrapy shell 'http://quotes.toscrape.com/page/1'` and then `response.css('title')`. This will look for tags named 'title' in the response, and will return them as a list.
+
+`>>> response.css('title')
+[<Selector xpath='descendant-or-self::title' data='<title>Quotes to Scrape</title>'>]`
+
+To extract the text from the title above, you can do:
+
+`response.css('title::text').extract()`
+
+and if you use `.extract_first()`, it will get the first item on that list.
+
+`>>> response.css('title::text').extract_first()
+'Quotes to Scrape'`
+
+Remember that using `extract_first()` avoids an IndexError when it doesn't find any element matching the selection.
+
+Besides the `extract()` method, we can use `re()` to extract using *regular expressions*.
+
+`>>> response.css('title::text').re(r'(\w+) to (\w+)')
+['Quotes', 'Scrape']`
+
+In order to find the proper CSS selector to use, you might find useful opening the response page from the shell in your web browser using `view(response)`. It will open the web browser with the website.
