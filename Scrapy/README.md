@@ -78,3 +78,47 @@ Besides CSS, Scrapy selectors also support using XPath expressions:
 `response.xpath('//title')`
 
 XPath expressions are very powerful, and the foundation of Scrapy Selectors. They are so because besides navigating the structure, it can also look at the content. Using XPath we are able to select things like *select the link that contains the text "Next Page"*. This makes XPath very fitting to the task of scraping, and we encourage to learn [XPath](https://doc.scrapy.org/en/latest/topics/selectors.html#topics-selectors), with this [tutorial](http://zvon.org/comp/r/tut-XPath_1.html) and this [one](http://plasmasturm.org/log/xpath101/).
+
+## Extracting quotes and authors
+
+Each quote in quotes.toscrape.com is represented by HTML elements that look like this:
+
+```html
+<div class="quote">
+    <span class="text">“The world as we have created it is a process of our
+    thinking. It cannot be changed without changing our thinking.”</span>
+    <span>
+        by <small class="author">Albert Einstein</small>
+        <a href="/author/Albert-Einstein">(about)</a>
+    </span>
+    <div class="tags">
+        Tags:
+        <a class="tag" href="/tag/change/page/1/">change</a>
+        <a class="tag" href="/tag/deep-thoughts/page/1/">deep-thoughts</a>
+        <a class="tag" href="/tag/thinking/page/1/">thinking</a>
+        <a class="tag" href="/tag/world/page/1/">world</a>
+    </div>
+</div>
+```
+
+We get a list of selectors for the quote HTML elements with:
+
+`response.css("div.quote")`
+
+We can do, then, `quote = response.css("div.quote")[0]` as an example, and extract title, author and the tags from that quote using the quote object we have just created:
+
+```
+title = quote.css("span.text::text").extract_first()
+author = quote.css("small.author::text").extract_first()
+tags = quote.css("div.tags a.tag::text").extract()
+```
+
+Having figured out how to extract each bit, we can now iterate over all the quotes elements and put them together into a dictionary:
+
+```python
+for quote in response.css("div.quote"):
+    text = quote.css("span.text::text").extract_first()
+    author = quote.css("small.author::text").extract_first()
+    tags = quote.css("div.tags a.tag::text").extract()
+    print(dict(text=text, author=author, tags=tags))
+```
